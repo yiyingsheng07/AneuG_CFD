@@ -20,4 +20,5 @@
 
    ```vmtk_cfdmesher.py```
 
-6. Assign inlet and outlet (in progress)
+5. Assign inlet and outlet (in progress)
+6. .vtu to .msh for Fluent
