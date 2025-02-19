@@ -1,6 +1,8 @@
 # AneuG_CFD
 
 ### Pre-processing Pipeline
+*The code in the ```VMTK``` folder is copied from [CFD_Machine_Learning/VMTK](https://github.com/EndritPJ/CFD_Machine_Learning/tree/main/VMTK). It has not been modified unless stated otherwise.
+
 1. .obj to .vtp file (x)
 
    Paraview save as .vtp
