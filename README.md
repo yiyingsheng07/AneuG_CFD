@@ -22,3 +22,32 @@
 
 5. Assign inlet and outlet (in progress)
 6. .vtu to .msh for Fluent
+
+### Use AneuG to get CFD meshes for generated shapes
+
+1. Clone AneuG into VMTK directory
+
+```bash
+cd VMTK
+git clone https://github.com/anonymousaneug/AneuG.git
+```
+
+2. Follow instructions at https://github.com/anonymousaneug/AneuG.git and download network checkpoint files from Google drive.
+
+3. Run script to generate synthetic shapes:
+```bash
+cd AneuG
+python pipeline_generator.py
+```
+
+4. Run script to create volume mesh using VMTK:
+```bash
+cd ..
+python pipeline_remesher.py
+```
+
+5 Run script to sort out inlet & outlet sequence for generated .vtu files:
+```bash
+cd ..
+python pipeline_sort_parts.py
+```
