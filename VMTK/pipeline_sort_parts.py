@@ -88,4 +88,12 @@ if __name__ == "__main__":
     
 """
 python pipeline_sort_parts.py
+
+git config --global user.name "WenHaoDing"
+git config --global user.email "w.ding23@imperial.ac.uk"
+
+git config --global user.name "anonymousaneug"
+git config --global user.email "anonymousaneug@gmail.com"
+
+
 """
