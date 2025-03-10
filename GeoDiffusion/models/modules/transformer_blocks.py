@@ -5,8 +5,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from typing import Optional
-
-from GeoDiffusion.modules.checkpoint import checkpoint
+import sys
+sys.path.append('../')
+from models.modules.checkpoint import checkpoint
 
 
 def init_linear(l, stddev):
@@ -79,7 +80,7 @@ class ResidualAttentionBlock(nn.Module):
         self,
         *,
         device: torch.device,
-        dtype: torch.dtype,
+        dtype: torch.dtype= torch.float32,
         n_ctx: int,
         width: int,
         heads: int,

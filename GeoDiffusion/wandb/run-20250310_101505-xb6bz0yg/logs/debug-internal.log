@@ -1,0 +1,13 @@
+{"time":"2025-03-10T10:15:05.061520929Z","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-03-10T10:15:05.061535464Z","level":"INFO","msg":"created symlink","path":"/media/yaplab/\"HDD Storage\"/wenhao/AneuG_CFD/GeoDiffusion/wandb/run-20250310_101505-xb6bz0yg/logs/debug-core.log"}
+{"time":"2025-03-10T10:15:05.167022967Z","level":"INFO","msg":"created new stream","id":"xb6bz0yg"}
+{"time":"2025-03-10T10:15:05.167049195Z","level":"INFO","msg":"stream: started","id":"xb6bz0yg"}
+{"time":"2025-03-10T10:15:05.167166648Z","level":"INFO","msg":"writer: Do: started","stream_id":"xb6bz0yg"}
+{"time":"2025-03-10T10:15:05.167232628Z","level":"INFO","msg":"handler: started","stream_id":"xb6bz0yg"}
+{"time":"2025-03-10T10:15:05.167262879Z","level":"INFO","msg":"sender: started","stream_id":"xb6bz0yg"}
+{"time":"2025-03-10T10:15:05.591827173Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-10T10:15:05.929650154Z","level":"INFO","msg":"Pausing system monitor"}
+{"time":"2025-03-10T10:15:05.97693904Z","level":"INFO","msg":"Resuming system monitor"}
+{"time":"2025-03-10T10:15:06.134105541Z","level":"INFO","msg":"Pausing system monitor"}
+{"time":"2025-03-10T10:15:15.573742148Z","level":"INFO","msg":"Resuming system monitor"}
+{"time":"2025-03-10T10:15:16.459213039Z","level":"INFO","msg":"Pausing system monitor"}

@@ -7,11 +7,12 @@ from einops import repeat
 import math
 import sys
 from typing import Tuple, List, Optional
+sys.path.append(".../")
 
-from GeoDiffusion.models.modules.checkpoint import checkpoint
-from GeoDiffusion.models.modules.embedder import FourierEmbedder
-from GeoDiffusion.models.modules.distributions import DiagonalGaussianDistribution
-from GeoDiffusion.models.modules.transformer_blocks import (
+from models.modules.checkpoint import checkpoint
+from models.modules.embedder import FourierEmbedder
+from models.modules.distributions import DiagonalGaussianDistribution
+from models.modules.transformer_blocks import (
     ResidualCrossAttentionBlock,
     Transformer
 )
@@ -309,7 +310,7 @@ class ShapeAsLatentPerceiver(ShapeAsLatentModule):
 class SurfaceFieldAutoEncoder(nn.Module):
     def __init__(self, *,
                  device: Optional[torch.device],
-                 dtype: Optional[torch.dtype],
+                 dtype: Optional[torch.dtype] = torch.float32,
                  num_latents,
                  feature_dim,
                  embed_dim,
@@ -373,8 +374,8 @@ class SurfaceFieldAutoEncoder(nn.Module):
             use_checkpoint=False
         )
     
-    def encode(self, pc, feats=None, sample_posterior=True):
-        latents, center_pos = self.encoder(pc, feats)
+    def encode(self, coords, feats=None, sample_posterior=True):
+        latents, center_pos = self.encoder(coords, feats)
         moments = self.pre_kl(latents)
         posterior = DiagonalGaussianDistribution(moments, feat_dim=-1)
         latents = posterior.sample()
@@ -385,21 +386,24 @@ class SurfaceFieldAutoEncoder(nn.Module):
         return self.transformer(latents)
     
     def query_geometry(self, queries: torch.FloatTensor, latents: torch.FloatTensor):
-        logits = self.geo_decoder(queries, latents).squeeze(-1)
-        return logits
+        feats = self.geo_decoder(queries, latents).squeeze(-1)
+        return feats
 
     def forward(self,
-                pc: torch.FloatTensor,
+                coords: torch.FloatTensor,
                 feats: torch.FloatTensor,
                 queries: torch.FloatTensor,
                 sample_posterior: bool = True):
-        latents, center_pos, posterior = self.encode(pc, feats, sample_posterior=sample_posterior)
-
+        latents, center_pos, posterior = self.encode(coords, feats, sample_posterior=sample_posterior)
         latents = self.decode(latents)
-        logits = self.query_geometry(queries, latents)
-
-        return logits, center_pos, posterior
-
+        recon_feats = self.query_geometry(queries, latents)
+        if sample_posterior:
+            kl_loss = posterior.kl(dims=(1,2))
+            kl_loss = torch.mean(kl_loss)
+        else:
+            kl_loss = torch.tensor(0.0, device=recon_feats.device)
+        return recon_feats, center_pos, kl_loss
+    
 
 
 """
