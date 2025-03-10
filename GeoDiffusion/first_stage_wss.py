@@ -10,11 +10,13 @@ import torch.nn as nn
 from datasets.wss import WSSPeakDataset
 from losses.base import KLSurfaceField
 
-batch_size = 32
+batch_size = 64
 train_split = 0.8
+encode_size = 16800
+decode_size = 3600
 
 root_dir = '/media/yaplab/HDD_Storage/wenhao/datasets/AneuG_CFD/peak_wss'
-dataset = WSSPeakDataset(root_dir, encode_size=16800, decode_size=3600)
+dataset = WSSPeakDataset(root_dir, encode_size=encode_size, decode_size=decode_size)
 train_size = int(train_split * len(dataset))
 test_size = len(dataset) - train_size
 train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
@@ -44,12 +46,12 @@ SurfaceFieldVAE = SurfaceFieldAutoEncoder(device=device,
                                           heads=heads,
                                           num_encoder_layers=num_encoder_layers,
                                           num_decoder_layers=num_decoder_layers)
-SurfaceFieldVAE = nn.DataParallel(SurfaceFieldVAE, device_ids=[0, 1])
+# SurfaceFieldVAE = nn.DataParallel(SurfaceFieldVAE, device_ids=[0, 1])
 SurfaceFieldVAE.to(device)
 
 # %%
 import wandb
-log_wandb = False
+log_wandb = True
 meta = "debug"
 if log_wandb:
     wandb.login()
@@ -73,7 +75,7 @@ for epoch in range(100000+1):
         loss.backward()
         optimizer.step()
     
-    if epoch % 100 == 0:
+    if epoch % 10 == 0:
         recon_loss_test = 0.0
         for j, data in enumerate(test_loader):
             data = {key: value.to(device) for key, value in data.items()}
@@ -84,12 +86,16 @@ for epoch in range(100000+1):
             recon_loss_test += loss_test.item() / len(test_loader)
         print(f'Epoch: {epoch}, Test Loss: {recon_loss_test}')
     
-    log_dict = {'recon_loss': recon_loss, 'kl_loss': kl_loss, 'test_loss': recon_loss_test}
+    log_dict = {'recon_loss': recon_loss.item(), 'kl_loss': kl_loss.item(), 'test_loss': recon_loss_test}
     print(log_dict)
     if log_wandb:
         wandb.log(log_dict, step=epoch)
     
     scheduler.step()
-wandb.finish
+wandb.finish()
 
 
+"""
+
+python first_stage_wss.py
+"""

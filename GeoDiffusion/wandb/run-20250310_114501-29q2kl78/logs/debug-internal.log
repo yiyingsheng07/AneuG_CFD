@@ -1,0 +1,8 @@
+{"time":"2025-03-10T11:45:01.3317795Z","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-03-10T11:45:01.331791935Z","level":"INFO","msg":"created symlink","path":"/media/yaplab/\"HDD Storage\"/wenhao/AneuG_CFD/GeoDiffusion/wandb/run-20250310_114501-29q2kl78/logs/debug-core.log"}
+{"time":"2025-03-10T11:45:01.535895885Z","level":"INFO","msg":"created new stream","id":"29q2kl78"}
+{"time":"2025-03-10T11:45:01.535913583Z","level":"INFO","msg":"stream: started","id":"29q2kl78"}
+{"time":"2025-03-10T11:45:01.536012886Z","level":"INFO","msg":"writer: Do: started","stream_id":"29q2kl78"}
+{"time":"2025-03-10T11:45:01.536035772Z","level":"INFO","msg":"sender: started","stream_id":"29q2kl78"}
+{"time":"2025-03-10T11:45:01.536042606Z","level":"INFO","msg":"handler: started","stream_id":"29q2kl78"}
+{"time":"2025-03-10T11:45:01.80936555Z","level":"INFO","msg":"Starting system monitor"}
