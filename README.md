@@ -37,17 +37,12 @@ git clone https://github.com/anonymousaneug/AneuG.git
 3. Run script to generate synthetic shapes:
 ```bash
 cd AneuG
-python pipeline_generator.py
+python pipeline_generator.ipynb
 ```
 
 4. Run script to create volume mesh using VMTK:
 ```bash
 cd ..
-python pipeline_remesher.py
+python get_mesh_dataset_custom.py
 ```
 
-5 Run script to sort out inlet & outlet sequence for generated .vtu files:
-```bash
-cd ..
-python pipeline_sort_parts.py
-```
