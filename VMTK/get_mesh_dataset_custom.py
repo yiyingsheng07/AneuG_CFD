@@ -10,9 +10,9 @@ import copy
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from vmtk_vtu2msh import write_msh_single
+import pandas as pd
 
-
-def sort_parts(mesh_file):
+def sort_parts(mesh_file, visualize=False):
     # read vtu
     mesh_reader = vmtk.vmtkmeshreader.vmtkMeshReader()
     mesh_reader.InputFileName = mesh_file
@@ -68,26 +68,66 @@ def sort_parts(mesh_file):
         point_set[str(cell_id)] = np.concatenate(point_set[str(cell_id)], axis=0)
 
     # visualize
-    figure = plt.figure()
-    ax = figure.add_subplot(111, projection='3d')
-    colors = ['r', 'g', 'b']
-    for i, color in zip(id_set, colors):
-        points = point_set[str(i)]
-        cpcd_points = cpcd_glo_gen.reshape(-1, 3)
-        ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=color)
-        ax.scatter(cpcd_points[:, 0], cpcd_points[:, 1], cpcd_points[:, 2], c='gray')
-    plt.savefig(os.path.join(os.path.dirname(mesh_file), "sorted_parts.png"))
+    if visualize:
+        figure = plt.figure()
+        ax = figure.add_subplot(111, projection='3d')
+        colors = ['r', 'g', 'b']
+        for i, color in zip(id_set, colors):
+            points = point_set[str(i)]
+            cpcd_points = cpcd_glo_gen.reshape(-1, 3)
+            ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=color)
+            ax.scatter(cpcd_points[:, 0], cpcd_points[:, 1], cpcd_points[:, 2], c='gray')
+        plt.savefig(os.path.join(os.path.dirname(mesh_file), "sorted_parts.png"))
+
+
+def scan_inlet_nodes(mesh_file):
+    """
+    Fluent parabolic inlet udf requires a csv file containing inlet node coordinates.
+    This function scans the mesh and write the node coordinates into a csv file.
+    """
+    # check if csv exists
+    csv_path = os.path.join(os.path.dirname(mesh_file), "inlet_centroids.csv")
+    if os.path.exists(csv_path):
+        return None
+    # read vtu
+    mesh_reader = vmtk.vmtkmeshreader.vmtkMeshReader()
+    mesh_reader.InputFileName = mesh_file
+    mesh_reader.Execute()
+    # convert vtu to np array
+    mesh2np = vmtk.vmtkmeshtonumpy.vmtkMeshToNumpy()
+    mesh2np.Mesh = mesh_reader.Mesh
+    mesh2np.Execute()
+    mesh_arr = mesh2np.ArrayDict
+    # read vtu with vtk
+    vtk_reader = vtk.vtkXMLUnstructuredGridReader()
+    vtk_reader.SetFileName(mesh_file)
+    vtk_reader.Update()
+    ugrid = vtk_reader.GetOutput()
+
+    # get inlet node coordinates
+    cell_id = 2
+    cell_indices = np.where(mesh_arr['CellData']['CellEntityIds']==cell_id)[0]
+    point_set = []
+    for cell_indice in cell_indices:
+        points = copy.deepcopy(ns.vtk_to_numpy(ugrid.GetCell(cell_indice).GetPoints().GetData()))
+        point_set.append(points)
+    point_set = np.concatenate(point_set, axis=0)
+    # write to csv
+    df = pd.DataFrame(point_set, columns=['x', 'y', 'z'])
+    df.to_csv(csv_path, index=False)
+    return None
 
 
 if __name__ == "__main__":
     # conf
     root = "AneuG/datasets/stable_64"  # change this to relative path on your workstation
     edge = 0.13
-    inflation = "n"
+    inflation = "y"
     vtp_prefix = "shape"
     smoothed_vtp_prefix = vtp_prefix + "_remeshed"
     vtu_prefix = "mesh"
     msh_prefix = "mesh"
+    to_scan_inlet_nodes = True  # if True, scan folders for inlet node coordinate csv files (required by udf)
 
     # meshing
     src_files = [os.path.join(root, f, "shape.vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
@@ -102,6 +142,9 @@ if __name__ == "__main__":
         os.system(arg)
 
         vtu_path = os.path.join(os.path.dirname(src), vtu_prefix + ".vtu")
+        # scan inlet nodes
+        if to_scan_inlet_nodes:
+            scan_inlet_nodes(vtu_path)
         msh_path = os.path.join(os.path.dirname(src), msh_prefix + ".msh")
         # generate volume mesh
         if not os.path.exists(vtu_path):
