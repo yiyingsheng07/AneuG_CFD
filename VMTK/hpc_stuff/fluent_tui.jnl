@@ -1,0 +1,45 @@
+; Author: Wenhao Ding, email: w.ding23@imperial.ac.uk
+; Data: 03/12/2025
+; Comments: This is a steady version, but the velocity inlet udf is already transient which you can directly use for transient simulation.
+
+; Set laminar flow
+/define/models/viscous/laminar yes
+
+; Set blood material to be carru-yasuda (I don't know how to do this, let me ask Simao)
+
+; Switch three wall sections into inlet and outlets.
+/define/boundary-conditions/zone-type 4 velocity-inlet
+/define/boundary-conditions/zone-type 5 outflow
+/define/boundary-conditions/zone-type 6 outflow
+
+; Define mass flow split outlets.
+/define/boundary-conditions/outflow 5 0.5
+/define/boundary-conditions/outflow 6 0.5
+
+; I can only compile successfully using built-in compilers, but this option is not provided in console
+; So, right now I'm relying on directly loading from a already compiled libudf folder, which I reckon should be fine.
+; /define/user-defined/compiled-functions compile libudf yes vprofile_transient_parabolic_clock_advanced.c "" ""
+/define/user-defined/compiled-functions load libudf
+
+; Assign udf velocity profile
+/define/boundary-conditions/set/velocity-inlet surface4 () vmag yes yes udf inlet_x_velocity_transient::libudf quit
+
+; Set solution scheme 24 for COUPLED and 20 for SIMPLE
+; We need to set Courant number if its transient, I'm skipping for now.
+/solve/set/p-v-coupling 24
+
+; Set convergence criterion (I'm setting 0.0001 for all equations, if with turbulence setting add more numbers)
+/solve/monitors/residual/convergence-criteria 0.0001 0.0001 0.0001 0.0001
+
+; Solving configuration (I haven't decided, but this is pretty much it)
+/solve/initialize/hyb-initialization
+/solve/iterate 50
+
+; Below is the solving setting for transient.
+; /solve/set/time-step 0.0047
+; /file/autosave/data-frequency 150
+; /solve/initialize/hyb-initialization
+; /solve/dual-time-iterate 319 15
+; /solve/set/time-step 0.00235
+; /file/autosave/data-frequency 3
+; /solve/dual-time-iterate 660 40

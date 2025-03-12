@@ -81,9 +81,9 @@ def sort_parts(mesh_file):
 
 if __name__ == "__main__":
     # conf
-    root = "AneuG/datasets/stable_64_v1"  # change this to relative path on your workstation
+    root = "AneuG/datasets/stable_64"  # change this to relative path on your workstation
     edge = 0.13
-    inflation = "y"
+    inflation = "n"
     vtp_prefix = "shape"
     smoothed_vtp_prefix = vtp_prefix + "_remeshed"
     vtu_prefix = "mesh"
