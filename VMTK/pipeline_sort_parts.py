@@ -79,7 +79,7 @@ def sort_parts(mesh_file):
 
 if __name__ == "__main__":
     # conf
-    root = "AneuG/dataset/initial"
+    root = "AneuG/datasets/stable_64"
     mesh_files = [os.path.join(root, dir, "mesh.vtu") for dir in os.listdir(root) if os.path.isdir(os.path.join(root, dir)) and 
                 os.path.exists(os.path.join(root, dir, "mesh.vtu"))]
     for mesh_file in tqdm(mesh_files):
@@ -94,6 +94,5 @@ git config --global user.email "w.ding23@imperial.ac.uk"
 
 git config --global user.name "anonymousaneug"
 git config --global user.email "anonymousaneug@gmail.com"
-
 
 """

@@ -5,9 +5,9 @@ from tqdm import tqdm
 
 if __name__ == "__main__":
     # conf
-    root = "AneuG/dataset/initial"
+    root = "AneuG/datasets/stable_64"
     edge = 0.2
-    inflation = "n"
+    inflation = "y"
 
     # meshing
     src_files = [os.path.join(root, f, "shape.vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
@@ -20,5 +20,5 @@ if __name__ == "__main__":
         cfdmesher_single(src, dst, edge, inflation)
 
 """
-python get_volume_mesh.py
+python pipeline_remesher.py
 """
