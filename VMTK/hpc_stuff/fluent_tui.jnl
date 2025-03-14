@@ -2,10 +2,14 @@
 ; Data: 03/12/2025
 ; Comments: This is a steady version, but the velocity inlet udf is already transient which you can directly use for transient simulation.
 
+; read mesh
+/file/read-case meshfile.msh
+
 ; Set laminar flow
 /define/models/viscous/laminar yes
 
-; Set blood material to be carru-yasuda (I don't know how to do this, let me ask Simao)
+; Set blood material to be carru-yasuda (theoretically we don't need to re-assign this to the cell zone because we are overwritting the original one)
+/define/materials/change-create air blood yes constant 1050 no no yes carreau shear-rate-dependent 3.313 0.3568 0.056 0.00345 no no no yes
 
 ; Switch three wall sections into inlet and outlets.
 /define/boundary-conditions/zone-type 4 velocity-inlet
