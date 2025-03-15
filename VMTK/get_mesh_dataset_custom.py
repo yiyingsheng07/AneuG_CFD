@@ -80,7 +80,9 @@ def sort_parts(mesh_file, visualize=False):
         plt.savefig(os.path.join(os.path.dirname(mesh_file), "sorted_parts.png"))
 
 
-def scan_inlet_nodes(mesh_file):
+def scan_inlet_nodes(mesh_file, scale_factor=0.001):
+    if scale_factor != 1:
+        print(f"Scale factor is set to {scale_factor}")
     """
     Fluent parabolic inlet udf requires a csv file containing inlet node coordinates.
     This function scans the mesh and write the node coordinates into a csv file.
@@ -111,7 +113,7 @@ def scan_inlet_nodes(mesh_file):
     for cell_indice in cell_indices:
         points = copy.deepcopy(ns.vtk_to_numpy(ugrid.GetCell(cell_indice).GetPoints().GetData()))
         point_set.append(points)
-    point_set = np.concatenate(point_set, axis=0)
+    point_set = np.concatenate(point_set, axis=0) * scale_factor
     # write to csv
     df = pd.DataFrame(point_set, columns=['x', 'y', 'z'])
     df.to_csv(csv_path, index=False)
@@ -160,6 +162,15 @@ if __name__ == "__main__":
 
 """
 python get_mesh_dataset_custom.py
+
+git config --global user.name "WenHaoDing"
+git config --global user.email "w.ding23@imperial.ac.uk"
+
+
+ssh-keygen -t ed25519 -C "w.ding23@imperial.ac.uk"
+
+
+
 """
 
 
