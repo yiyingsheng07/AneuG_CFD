@@ -52,6 +52,22 @@ def cfdmesher_single(ifile, ofile, edge, bl):
         os.system(arg)
 
 
+def cfdmesher_custom(ifile, ofile, edge, max_edge, bl):
+    # meshing with inflation layers
+    if(bl=="y"):
+        arg = (
+            f" vmtkmeshgenerator -ifile {ifile} "
+            f" -edgelength {edge} -maxedgelength {max_edge} -boundarylayer 1 -thicknessfactor 0.5 -sublayers 4 -sublayerratio 0.8 "
+            f" -boundarylayeroncaps 0 -tetrahedralize 1 -ofile {ofile}"
+        )
+        os.system(arg)
+    else:
+        arg = (
+            f" vmtkmeshgenerator -ifile {ifile} -edgelength {edge} -ofile {ofile}"
+        )
+        os.system(arg)
+
+
 if __name__=="__main__":
     mode = int(input("1 = single file, 2 = multiple files in directory: "))
     readline.set_completer_delims(" \t\n=")

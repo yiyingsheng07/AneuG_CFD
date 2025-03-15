@@ -1,4 +1,4 @@
-from vmtk_cfdmesher import cfdmesher_single
+from vmtk_cfdmesher import cfdmesher_single, cfdmesher_custom
 import os, readline
 import vmtk
 from vmtk import vmtkscripts
@@ -121,7 +121,9 @@ def scan_inlet_nodes(mesh_file):
 if __name__ == "__main__":
     # conf
     root = "AneuG/datasets/stable_64"  # change this to relative path on your workstation
-    edge = 0.13
+    unit_factor = 0.001
+    edge = 0.13 * unit_factor
+    max_edge = 1.0 * unit_factor
     inflation = "y"
     vtp_prefix = "shape"
     smoothed_vtp_prefix = vtp_prefix + "_remeshed"
@@ -148,9 +150,10 @@ if __name__ == "__main__":
         msh_path = os.path.join(os.path.dirname(src), msh_prefix + ".msh")
         # generate volume mesh
         if not os.path.exists(vtu_path):
-            cfdmesher_single(smoothed_vtp_path, vtu_path, edge, inflation)
-            # sort part indices
-            sort_parts(mesh_file=vtu_path)
+            # cfdmesher_single(smoothed_vtp_path, vtu_path, edge, inflation)
+            cfdmesher_custom(smoothed_vtp_path, vtu_path, edge, max_edge, inflation)
+        # sort part indices
+        sort_parts(mesh_file=vtu_path)
         # generate .msh file
         if not os.path.exists(msh_path):
             write_msh_single(ifile=vtu_path, ofile=msh_path)
