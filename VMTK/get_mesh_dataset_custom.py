@@ -11,6 +11,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from vmtk_vtu2msh import write_msh_single
 import pandas as pd
+import pyvista as pv
 
 
 def sort_parts(mesh_file, visualize=False):
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     max_edge = 1.0 * unit_factor
     inflation = "y"
     obj_prefix = "shape_remeshed"
-    vtp_prefix = "shape"
+    vtp_prefix = "shape_remeshed"
     smoothed_vtp_prefix = vtp_prefix + "_remeshed"
     vtu_prefix = "mesh"
     msh_prefix = "mesh"
@@ -139,6 +140,10 @@ if __name__ == "__main__":
     create_vtp = True
     if create_vtp:
         src_files = [os.path.join(root, f, obj_prefix+".obj") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f)) and not os.path.exists(os.path.join(root, f, vtp_prefix+".obj"))]
+        for src in tqdm(src_files, total=len(src_files)):
+            tgt = os.path.join(os.path.dirname(src), vtp_prefix+".vtp")
+            pv_mesh = pv.read(src)
+            pv_mesh.save(tgt)
 
     # meshing
     src_files = [os.path.join(root, f, vtp_prefix+".vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
