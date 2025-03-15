@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from vmtk_vtu2msh import write_msh_single
 import pandas as pd
 
+
 def sort_parts(mesh_file, visualize=False):
     # read vtu
     mesh_reader = vmtk.vmtkmeshreader.vmtkMeshReader()
@@ -127,23 +128,29 @@ if __name__ == "__main__":
     edge = 0.13 * unit_factor
     max_edge = 1.0 * unit_factor
     inflation = "y"
+    obj_prefix = "shape_remeshed"
     vtp_prefix = "shape"
     smoothed_vtp_prefix = vtp_prefix + "_remeshed"
     vtu_prefix = "mesh"
     msh_prefix = "mesh"
     to_scan_inlet_nodes = True  # if True, scan folders for inlet node coordinate csv files (required by udf)
 
+    # create vtp
+    create_vtp = True
+    if create_vtp:
+        src_files = [os.path.join(root, f, obj_prefix+".obj") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f)) and not os.path.exists(os.path.join(root, f, vtp_prefix+".obj"))]
+
     # meshing
-    src_files = [os.path.join(root, f, "shape.vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
+    src_files = [os.path.join(root, f, vtp_prefix+".vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
     
     readline.set_completer_delims(" \t\n=")
     readline.parse_and_bind("tab: complete")
 
     for src in tqdm(src_files, total=len(src_files)):
         # try remesh surface mesh
-        smoothed_vtp_path = os.path.join(os.path.dirname(src), smoothed_vtp_prefix + ".vtp")
-        arg = (f"vmtksurfacesmoothing -ifile {src} -passband 0.1 -iterations 30 -ofile {smoothed_vtp_path}")
-        os.system(arg)
+        # smoothed_vtp_path = os.path.join(os.path.dirname(src), smoothed_vtp_prefix + ".vtp")
+        # arg = (f"vmtksurfacesmoothing -ifile {src} -passband 0.1 -iterations 30 -ofile {smoothed_vtp_path}")
+        # os.system(arg)
 
         vtu_path = os.path.join(os.path.dirname(src), vtu_prefix + ".vtu")
         # scan inlet nodes
@@ -152,8 +159,8 @@ if __name__ == "__main__":
         msh_path = os.path.join(os.path.dirname(src), msh_prefix + ".msh")
         # generate volume mesh
         if not os.path.exists(vtu_path):
-            # cfdmesher_single(smoothed_vtp_path, vtu_path, edge, inflation)
-            cfdmesher_custom(smoothed_vtp_path, vtu_path, edge, max_edge, inflation)
+            # cfdmesher_custom(src, vtu_path, edge, max_edge, inflation)
+            cfdmesher_custom(src, vtu_path, edge, max_edge, inflation)
         # sort part indices
         sort_parts(mesh_file=vtu_path)
         # generate .msh file
@@ -164,7 +171,7 @@ if __name__ == "__main__":
 python get_mesh_dataset_custom.py
 
 git config --global user.name "WenHaoDing"
-git config --global user.email "w.ding23@imperial.ac.uk"
+git config --global user.email "wd123@ic.ac.uk"
 
 
 ssh-keygen -t ed25519 -C "w.ding23@imperial.ac.uk"
