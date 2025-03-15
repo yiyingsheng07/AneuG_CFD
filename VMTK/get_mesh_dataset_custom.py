@@ -123,7 +123,7 @@ def scan_inlet_nodes(mesh_file, scale_factor=0.001):
 if __name__ == "__main__":
     # conf
     root = "AneuG/datasets/stable_64"  # change this to relative path on your workstation
-    unit_factor = 0.001
+    unit_factor = 1
     edge = 0.13 * unit_factor
     max_edge = 1.0 * unit_factor
     inflation = "y"
