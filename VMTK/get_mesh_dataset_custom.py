@@ -191,7 +191,7 @@ git config --global user.email "wd123@ic.ac.uk"
 ssh-keygen -t ed25519 -C "w.ding23@imperial.ac.uk"
 
 
-
+scp -r /home/wenhao/AneuG_CFD/VMTK/AneuG/stable_64_v1 user@100.64.55.123:/F:/scp
 """
 
 
