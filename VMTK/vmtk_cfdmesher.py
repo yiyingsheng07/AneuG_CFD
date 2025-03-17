@@ -57,7 +57,7 @@ def cfdmesher_custom(ifile, ofile, edge, max_edge, bl):
     if(bl=="y"):
         arg = (
             f" vmtkmeshgenerator -ifile {ifile} "
-            f" -edgelength {edge} -maxedgelength {max_edge} -boundarylayer 1 -thicknessfactor 0.5 -sublayers 4 -sublayerratio 0.8 "
+            f" -edgelength {edge} -maxedgelength {max_edge} -boundarylayer 1 -thicknessfactor 0.8 -sublayers 6 -sublayerratio 0.6 "
             f" -boundarylayeroncaps 0 -tetrahedralize 1 -ofile {ofile}"
         )
         os.system(arg)

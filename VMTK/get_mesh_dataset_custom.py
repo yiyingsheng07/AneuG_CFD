@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from vmtk_vtu2msh import write_msh_single
 import pandas as pd
 import pyvista as pv
+import random
 
 
 def sort_parts(mesh_file, visualize=False):
@@ -124,9 +125,9 @@ def scan_inlet_nodes(mesh_file, scale_factor=0.001):
 
 if __name__ == "__main__":
     # conf
-    root = "AneuG/datasets/stable_64"  # change this to relative path on your workstation
+    root = os.path.join(os.getcwd(), "AneuG/stable_64_v1" ) # change this to relative path on your workstation
     unit_factor = 1
-    edge = 0.13 * unit_factor
+    edge = 0.14 * unit_factor
     max_edge = 1.0 * unit_factor
     inflation = "y"
     obj_prefix = "shape_remeshed"
@@ -134,12 +135,13 @@ if __name__ == "__main__":
     smoothed_vtp_prefix = vtp_prefix + "_remeshed"
     vtu_prefix = "mesh"
     msh_prefix = "mesh"
-    to_scan_inlet_nodes = True  # if True, scan folders for inlet node coordinate csv files (required by udf)
+    force_scan_inlet_nodes = True  # if True, scan folders for inlet node coordinate csv files (required by udf)
 
     # create vtp
-    create_vtp = True
+    create_vtp = False
     if create_vtp:
-        src_files = [os.path.join(root, f, obj_prefix+".obj") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f)) and not os.path.exists(os.path.join(root, f, vtp_prefix+".obj"))]
+        src_files = [os.path.join(root, f, obj_prefix+".obj") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f)) and not os.path.exists(os.path.join(root, f, vtp_prefix+".vtp"))]
+        print(src_files)
         for src in tqdm(src_files, total=len(src_files)):
             tgt = os.path.join(os.path.dirname(src), vtp_prefix+".vtp")
             pv_mesh = pv.read(src)
@@ -147,7 +149,8 @@ if __name__ == "__main__":
 
     # meshing
     src_files = [os.path.join(root, f, vtp_prefix+".vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
-    
+    src_files = random.sample(src_files, len(src_files))
+
     readline.set_completer_delims(" \t\n=")
     readline.parse_and_bind("tab: complete")
 
@@ -158,21 +161,27 @@ if __name__ == "__main__":
         # os.system(arg)
 
         vtu_path = os.path.join(os.path.dirname(src), vtu_prefix + ".vtu")
-        # scan inlet nodes
-        if to_scan_inlet_nodes:
-            scan_inlet_nodes(vtu_path)
+        
         msh_path = os.path.join(os.path.dirname(src), msh_prefix + ".msh")
         # generate volume mesh
         if not os.path.exists(vtu_path):
             # cfdmesher_custom(src, vtu_path, edge, max_edge, inflation)
             cfdmesher_custom(src, vtu_path, edge, max_edge, inflation)
-        # sort part indices
-        sort_parts(mesh_file=vtu_path)
+        
+        # scan inlet nodes
+        if not os.path.exists(os.path.join(os.path.dirname(vtu_path), "inlet_centroids.csv")) or force_scan_inlet_nodes:
+            # sort part indices
+            sort_parts(mesh_file=vtu_path)
+            scan_inlet_nodes(vtu_path)
+        else:
+            print("Inlet node coordinates already scanned.")
         # generate .msh file
         if not os.path.exists(msh_path):
             write_msh_single(ifile=vtu_path, ofile=msh_path)
 
 """
+conda activate vmtk_add
+cd VMTK
 python get_mesh_dataset_custom.py
 
 git config --global user.name "WenHaoDing"
