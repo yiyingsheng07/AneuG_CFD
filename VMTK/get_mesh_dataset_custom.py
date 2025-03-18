@@ -15,7 +15,7 @@ import pyvista as pv
 import random
 
 
-def sort_parts(mesh_file, visualize=True):
+def sort_parts(mesh_file, visualize=False):
     # read vtu
     mesh_reader = vmtk.vmtkmeshreader.vmtkMeshReader()
     mesh_reader.InputFileName = mesh_file
@@ -62,6 +62,17 @@ def sort_parts(mesh_file, visualize=True):
                     original_id = id_set.index(cell_id)
                     new_id = id_set[sort_sequence[original_id]]
                     mesh_arr['CellData']['CellEntityIds'][i] = new_id
+    
+    # overwrite
+    np2mesh = vmtk.vmtknumpytomesh.vmtkNumpyToMesh()
+    np2mesh.ArrayDict = mesh_arr
+    np2mesh.Execute()
+    writer = vmtk.vmtkmeshwriter.vmtkMeshWriter()
+    writer.Mesh = np2mesh.Mesh
+    writer.OutputFileName = mesh_file
+    writer.Execute()
+
+
     # record points
     for cell_id in id_set:
         cell_indices = np.where(mesh_arr['CellData']['CellEntityIds']==cell_id)[0]

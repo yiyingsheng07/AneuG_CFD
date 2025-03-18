@@ -1,0 +1,14 @@
+/file/rc "case-5.cas"
+/file/rd "case-5-00321.dat" yes
+sol set exp no yes no
+
+/solve/iterate 1
+
+/file/export/ensight-gold "result_00321"
+absolute-pressure dynamic-pressure x-velocity y-velocity z-velocity wall-shear x-wall-shear y-wall-shear z-wall-shear dx-velocity-dx dy-velocity-dy dz-velocity-dz dx-velocity-dy dy-velocity-dx dx-velocity-dz dz-velocity-dx dy-velocity-dz dz-velocity-dy dp-dx dp-dy dp-dz dp-dt viscosity-lam x-coordinate y-coordinate z-coordinate ok
+yes
+
+
+
+no
+

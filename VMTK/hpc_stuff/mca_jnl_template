@@ -1,0 +1,15 @@
+/file/rc "case.cas"
+
+/solve/set/time-step 0.0047
+
+/file/autosave/data-frequency 150
+
+/solve/initialize/hyb-initialization
+
+/solve/dual-time-iterate 319 15
+
+/solve/set/time-step 0.00235
+
+/file/autosave/data-frequency 3
+
+/solve/dual-time-iterate 660 40
