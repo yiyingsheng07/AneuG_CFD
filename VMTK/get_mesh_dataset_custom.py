@@ -15,7 +15,7 @@ import pyvista as pv
 import random
 
 
-def sort_parts(mesh_file, visualize=False):
+def sort_parts(mesh_file, visualize=True):
     # read vtu
     mesh_reader = vmtk.vmtkmeshreader.vmtkMeshReader()
     mesh_reader.InputFileName = mesh_file
@@ -125,9 +125,9 @@ def scan_inlet_nodes(mesh_file, scale_factor=0.001):
 
 if __name__ == "__main__":
     # conf
-    root = os.path.join(os.getcwd(), "AneuG/stable_64_v1" ) # change this to relative path on your workstation
+    root = os.path.join(os.getcwd(), "AneuG/stable_64" ) # change this to relative path on your workstation
     unit_factor = 1
-    edge = 0.14 * unit_factor
+    edge = 0.13 * unit_factor
     max_edge = 1.0 * unit_factor
     inflation = "y"
     obj_prefix = "shape_remeshed"
@@ -192,6 +192,10 @@ ssh-keygen -t ed25519 -C "w.ding23@imperial.ac.uk"
 
 
 scp -r /home/wenhao/AneuG_CFD/VMTK/AneuG/stable_64_v1 user@100.64.55.123:/F:/scp
+
+find AneuG/stable_64_v1 -type f -name "*.vtu" -delete
+find AneuG/stable_64_v1 -type f -name "*.msh" -delete
+find AneuG/stable_64_v1 -type f -name "*.csv" -delete
 """
 
 
