@@ -136,7 +136,7 @@ def scan_inlet_nodes(mesh_file, scale_factor=0.001):
 
 if __name__ == "__main__":
     # conf
-    root = os.path.join(os.getcwd(), "AneuG/stable_64" ) # change this to relative path on your workstation
+    root = os.path.join(os.getcwd(), "AneuG/stable_64_v1" ) # change this to relative path on your workstation
     unit_factor = 1
     edge = 0.13 * unit_factor
     max_edge = 1.0 * unit_factor
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     smoothed_vtp_prefix = vtp_prefix + "_remeshed"
     vtu_prefix = "mesh"
     msh_prefix = "mesh"
-    force_scan_inlet_nodes = True  # if True, scan folders for inlet node coordinate csv files (required by udf)
+    force_scan_inlet_nodes = False  # if True, scan folders for inlet node coordinate csv files (required by udf)
 
     # create vtp
     create_vtp = False
@@ -181,9 +181,13 @@ if __name__ == "__main__":
         
         # scan inlet nodes
         if not os.path.exists(os.path.join(os.path.dirname(vtu_path), "inlet_centroids.csv")) or force_scan_inlet_nodes:
-            # sort part indices
-            sort_parts(mesh_file=vtu_path)
-            scan_inlet_nodes(vtu_path)
+            try:
+                # sort part indices
+                sort_parts(mesh_file=vtu_path)
+                scan_inlet_nodes(vtu_path)
+            except Exception as e:
+                print("Error scanning inlet nodes: ", e)
+                continue
         else:
             print("Inlet node coordinates already scanned.")
         # generate .msh file
@@ -204,9 +208,13 @@ ssh-keygen -t ed25519 -C "w.ding23@imperial.ac.uk"
 
 scp -r /home/wenhao/AneuG_CFD/VMTK/AneuG/stable_64_v1 user@100.64.55.123:/F:/scp
 
+find AneuG/stable_64 -type f -name "*.vtu" -delete
+find AneuG/stable_64 -type f -name "*.msh" -delete
+find AneuG/stable_64 -type f -name "*.csv" -delete
 find AneuG/stable_64_v1 -type f -name "*.vtu" -delete
-find AneuG/stable_64_v1 -type f -name "*.msh" -delete
-find AneuG/stable_64_v1 -type f -name "*.csv" -delete
+
+
+find AneuG/stable_64_v1 -type f -name "*.msh" | wc -l
 """
 
 
