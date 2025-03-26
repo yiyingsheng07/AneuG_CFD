@@ -136,7 +136,8 @@ def scan_inlet_nodes(mesh_file, scale_factor=0.001):
 
 if __name__ == "__main__":
     # conf
-    root = os.path.join(os.getcwd(), "AneuG/stable_64_v1" ) # change this to relative path on your workstation
+    # root = os.path.join(os.getcwd(), "AneuG_CFD/stable_64_v1" ) # change this to relative path on your workstation
+    root = os.path.join("/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1" ) # change this to relative path on your workstation
     unit_factor = 1
     edge = 0.13 * unit_factor
     max_edge = 1.0 * unit_factor
@@ -149,7 +150,7 @@ if __name__ == "__main__":
     force_scan_inlet_nodes = False  # if True, scan folders for inlet node coordinate csv files (required by udf)
 
     # create vtp
-    create_vtp = False
+    create_vtp = True
     if create_vtp:
         src_files = [os.path.join(root, f, obj_prefix+".obj") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f)) and not os.path.exists(os.path.join(root, f, vtp_prefix+".vtp"))]
         print(src_files)
@@ -178,7 +179,7 @@ if __name__ == "__main__":
         if not os.path.exists(vtu_path):
             # cfdmesher_custom(src, vtu_path, edge, max_edge, inflation)
             cfdmesher_custom(src, vtu_path, edge, max_edge, inflation)
-        
+            
         # scan inlet nodes
         if not os.path.exists(os.path.join(os.path.dirname(vtu_path), "inlet_centroids.csv")) or force_scan_inlet_nodes:
             try:
@@ -192,7 +193,13 @@ if __name__ == "__main__":
             print("Inlet node coordinates already scanned.")
         # generate .msh file
         if not os.path.exists(msh_path):
-            write_msh_single(ifile=vtu_path, ofile=msh_path)
+            try: 
+                write_msh_single(ifile=vtu_path, ofile=msh_path)
+            except Exception as e:
+                print("Error writing msh file: ", e)
+                with open(os.path.join(root, "failed_vtu_paths.txt"), "a") as f:
+                    f.write(vtu_path + "\n")
+                continue
 
 """
 conda activate vmtk_add
@@ -213,6 +220,7 @@ find AneuG/stable_64 -type f -name "*.msh" -delete
 find AneuG/stable_64 -type f -name "*.csv" -delete
 find AneuG/stable_64_v1 -type f -name "*.vtu" -delete
 
+scp /E:/AneuG_Auto/automation_fluent/AneuG/datasets/stable_64_v2.rar meifeng@100.109.219.89:/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
 
 find AneuG/stable_64_v1 -type f -name "*.msh" | wc -l
 """
