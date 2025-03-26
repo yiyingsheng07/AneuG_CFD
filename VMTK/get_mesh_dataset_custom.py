@@ -148,7 +148,7 @@ if __name__ == "__main__":
     vtu_prefix = "mesh"
     msh_prefix = "mesh"
     force_scan_inlet_nodes = False  # if True, scan folders for inlet node coordinate csv files (required by udf)
-
+    log_file = os.path.join(root, "log.txt")
     # create vtp
     create_vtp = True
     if create_vtp:
@@ -158,6 +158,14 @@ if __name__ == "__main__":
             tgt = os.path.join(os.path.dirname(src), vtp_prefix+".vtp")
             pv_mesh = pv.read(src)
             pv_mesh.save(tgt)
+
+    # load log file (with failed cases)
+    if os.path.exists(log_file):
+        with open(log_file, "r") as f:
+            failed_paths = set(line.strip() for line in f)
+    else:
+        failed_paths = set()
+    print("Failed cases: ", failed_paths)
 
     # meshing
     src_files = [os.path.join(root, f, vtp_prefix+".vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
@@ -171,6 +179,10 @@ if __name__ == "__main__":
         # smoothed_vtp_path = os.path.join(os.path.dirname(src), smoothed_vtp_prefix + ".vtp")
         # arg = (f"vmtksurfacesmoothing -ifile {src} -passband 0.1 -iterations 30 -ofile {smoothed_vtp_path}")
         # os.system(arg)
+        # skip if case has been tested failed
+        if src in failed_paths:
+            print("Skipping failed case: ", src)
+            continue
 
         vtu_path = os.path.join(os.path.dirname(src), vtu_prefix + ".vtu")
         
@@ -197,8 +209,8 @@ if __name__ == "__main__":
                 write_msh_single(ifile=vtu_path, ofile=msh_path)
             except Exception as e:
                 print("Error writing msh file: ", e)
-                with open(os.path.join(root, "failed_vtu_paths.txt"), "a") as f:
-                    f.write(vtu_path + "\n")
+                with open(log_file, "a") as f:
+                    f.write(src + "\n")
                 continue
 
 """
