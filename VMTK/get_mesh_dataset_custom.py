@@ -221,11 +221,13 @@ python get_mesh_dataset_custom.py
 git config --global user.name "WenHaoDing"
 git config --global user.email "wd123@ic.ac.uk"
 
-
 ssh-keygen -t ed25519 -C "w.ding23@imperial.ac.uk"
 
 
 scp -r /home/wenhao/AneuG_CFD/VMTK/AneuG/stable_64_v1 user@100.64.55.123:/F:/scp
+
+scp -r /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1 user@100.64.55.123:/F:/scp
+
 
 find AneuG/stable_64 -type f -name "*.vtu" -delete
 find AneuG/stable_64 -type f -name "*.msh" -delete
@@ -234,8 +236,18 @@ find AneuG/stable_64_v1 -type f -name "*.vtu" -delete
 
 scp /E:/AneuG_Auto/automation_fluent/AneuG/datasets/stable_64_v2.rar meifeng@100.109.219.89:/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
 
+cd /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
+
 find AneuG/stable_64_v1 -type f -name "*.msh" | wc -l
-"""
+
+find ./ -type f -name "*.msh" | wc -l
+
+
+sudo ./Zscaler-linux-3.7.1.67-installer.run --userDomain ic.ac.uk
+
+chmod 777 -R /media
+
+"""!
 
 
 
