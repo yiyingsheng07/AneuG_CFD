@@ -168,7 +168,7 @@ if __name__ == "__main__":
     print("Failed cases: ", failed_paths)
 
     # meshing
-    sequential = False
+    sequential = True
     i_start = 4096
     i_end = 170000
     if sequential:
