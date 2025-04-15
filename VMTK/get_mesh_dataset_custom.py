@@ -235,7 +235,21 @@ find AneuG/stable_64_v1 -type f -name "*.vtu" -delete
 scp /E:/AneuG_Auto/automation_fluent/AneuG/datasets/stable_64_v2.rar meifeng@100.109.219.89:/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
 
 find AneuG/stable_64_v1 -type f -name "*.msh" | wc -l
+
+scp /E:/AneuG_Auto/automation_fluent/AneuG/datasets/stable_64_v2.rar meifeng@100.109.219.89:/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
+scp -r /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1 user@100.64.55.123:/F:/scp
+
+rsync /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1 wenhao@100.101.90.86:/media/yaplab/HDD_Storage/wenhao/datasets/AneuG_CFD/
+
+rsync -av --progress -e "ssh -p 2222" \
+/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1/ \
+wenhao@100.101.90.86:/media/yaplab/HDD_Storage/wenhao/datasets/AneuG_CFD/
+
+rsync -r \
+/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1/ \
+wenhao@100.101.90.86:/media/yaplab/HDD_Storage/wenhao/datasets/AneuG_CFD/stable_64_v3_p1
 """
+
 
 
 
