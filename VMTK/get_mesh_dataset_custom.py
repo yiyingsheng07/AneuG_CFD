@@ -137,7 +137,7 @@ def scan_inlet_nodes(mesh_file, scale_factor=0.001):
 if __name__ == "__main__":
     # conf
     # root = os.path.join(os.getcwd(), "AneuG_CFD/stable_64_v1" ) # change this to relative path on your workstation
-    root = os.path.join("/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1" ) # change this to relative path on your workstation
+    root = os.path.join("/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_pool2" ) # change this to relative path on your workstation
     unit_factor = 1
     edge = 0.13 * unit_factor
     max_edge = 1.0 * unit_factor
@@ -153,11 +153,12 @@ if __name__ == "__main__":
     create_vtp = True
     if create_vtp:
         src_files = [os.path.join(root, f, obj_prefix+".obj") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f)) and not os.path.exists(os.path.join(root, f, vtp_prefix+".vtp"))]
-        print(src_files)
+        src_files = random.sample(src_files, len(src_files))
         for src in tqdm(src_files, total=len(src_files)):
             tgt = os.path.join(os.path.dirname(src), vtp_prefix+".vtp")
-            pv_mesh = pv.read(src)
-            pv_mesh.save(tgt)
+            if not os.path.exists(tgt):
+                pv_mesh = pv.read(src)
+                pv_mesh.save(tgt)
 
     # load log file (with failed cases)
     if os.path.exists(log_file):
@@ -168,8 +169,14 @@ if __name__ == "__main__":
     print("Failed cases: ", failed_paths)
 
     # meshing
-    src_files = [os.path.join(root, f, vtp_prefix+".vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
-    src_files = random.sample(src_files, len(src_files))
+    sequential = False
+    i_start = 0
+    i_end = 9000
+    if sequential:
+        src_files = [os.path.join(root, f, vtp_prefix+".vtp") for f in ["stable_"+str(i) for i in range(i_start, i_end)] if os.path.isdir(os.path.join(root, f))]
+    else:
+        src_files = [os.path.join(root, f, vtp_prefix+".vtp") for f in os.listdir(root) if os.path.isdir(os.path.join(root, f))]
+        src_files = random.sample(src_files, len(src_files))
 
     readline.set_completer_delims(" \t\n=")
     readline.parse_and_bind("tab: complete")
@@ -214,20 +221,18 @@ if __name__ == "__main__":
                 continue
 
 """
-conda activate vmtk_add
 cd VMTK
+conda activate vmtk_add
 python get_mesh_dataset_custom.py
 
 git config --global user.name "WenHaoDing"
 git config --global user.email "wd123@ic.ac.uk"
 
+
 ssh-keygen -t ed25519 -C "w.ding23@imperial.ac.uk"
 
 
 scp -r /home/wenhao/AneuG_CFD/VMTK/AneuG/stable_64_v1 user@100.64.55.123:/F:/scp
-
-scp -r /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1 user@100.64.55.123:/F:/scp
-
 
 find AneuG/stable_64 -type f -name "*.vtu" -delete
 find AneuG/stable_64 -type f -name "*.msh" -delete
@@ -236,18 +241,25 @@ find AneuG/stable_64_v1 -type f -name "*.vtu" -delete
 
 scp /E:/AneuG_Auto/automation_fluent/AneuG/datasets/stable_64_v2.rar meifeng@100.109.219.89:/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
 
-cd /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
+find AneuG_CFD/stable_64_v3_pool2 -type f -name "*.msh" | wc -l
 
-find AneuG/stable_64_v1 -type f -name "*.msh" | wc -l
-
-find ./ -type f -name "*.msh" | wc -l
+find . -type f -name "*.msh" | wc -l
 
 
-sudo ./Zscaler-linux-3.7.1.67-installer.run --userDomain ic.ac.uk
+scp /E:/AneuG_Auto/automation_fluent/AneuG/datasets/stable_64_v2.rar meifeng@100.109.219.89:/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4
+scp -r /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1 user@100.64.55.123:/F:/scp
 
-chmod 777 -R /media
+rsync /media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1 wenhao@100.101.90.86:/media/yaplab/HDD_Storage/wenhao/datasets/AneuG_CFD/
 
-"""!
+rsync -av --progress -e "ssh -p 2222" \
+/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1/ \
+wenhao@100.101.90.86:/media/yaplab/HDD_Storage/wenhao/datasets/AneuG_CFD/
+
+rsync -r \
+/media/meifeng/b1a86f8c-b396-48b9-9666-2c6b304e43d4/AneuG_CFD/stable_64_v3_p1/ \
+wenhao@100.101.90.86:/media/yaplab/HDD_Storage/wenhao/datasets/AneuG_CFD/stable_64_v3_p1
+"""
+
 
 
 
